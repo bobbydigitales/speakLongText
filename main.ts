@@ -35,6 +35,8 @@ So, given that, what I want to point out is this: this is the correct way to giv
 Contrast this with the absolute absurdity that you see in object-oriented “methodologies” that tell you to start writing things on index cards (like the “class responsibility collaborators” methodology), or breaking out Visio to show how things “interact” using boxes and lines that connect them. You can spend hours with these methodologies and end up more confused about the problem than when you started. But if you just forget all that, and write simple code, you can always create your objects after the fact and you will find that they are exactly what you wanted.
 If you’re not used to programming like this, you may think I’m exaggerating, but you’ll just have to trust me, it’s true. I spend exactly zero time thinking about “objects” or what goes where. The fallacy of “object-oriented programming” is exactly that: that code is at all “object-oriented”. It isn’t. Code is procedurally oriented, and the “objects” are simply constructs that arise that allow procedures to be reused. So if you just let that happen instead of trying to force everything to work backwards, programming becomes immensely more pleasant.Because I needed to spend some time introducing the concept of compression-oriented programming, and also because I enjoy trashing object-oriented programming, this article is already very long despite only showing a small fraction of the code transformations I did to the Witness UI code. So I will save the next round for next week, where I’ll talk about handling that multi-button code I showed, and then how I started using the newly compressed UI semantics to start extending what the UI itself could do.`;
 
+let debugLog = true;
+
 async function speakLongText(text:string) {
     if (!('speechSynthesis' in window)) {
         console.warn("Speech is not supported in this browser!");
@@ -57,11 +59,14 @@ async function speakText(messages, index = 0) {
         }
 
         const utterance = new SpeechSynthesisUtterance(messages[index]);
-        if (voice){utterance.voice = voice};
+        utterance.voice = voice;
         utterance.onend = () => {
             resolve(speakText(messages, index + 1));
         };
 
+        if (debugLog) {
+            console.log(`saying: `, utterance);
+        }
         speechSynthesis.speak(utterance);
     });
 }
@@ -72,16 +77,24 @@ function selectVoice() {
     voice = voices.filter(function (voice) { return voice.name === 'Google UK English Male'; })[0];
 }
 
+
 async function main() {
     debugger;
     console.log("Hello TypeScript!");
     speechSynthesis.onvoiceschanged = selectVoice;
 
-    let contentDiv = document.getElementById('content');
+    const contentDiv = document.getElementById('content') as HTMLDivElement;
+    const speakButton = document.getElementById('speakButton') as HTMLInputElement;
+    const stopButton = document.getElementById('stopButton') as HTMLInputElement;
+
+    if (!(speakButton && contentDiv)) {
+        throw new Error(`Couldn't get elements!`)
+    }
+
+    speakButton.addEventListener('click', ()=>{speakLongText(text)});
+    stopButton.addEventListener('click', ()=>{window.speechSynthesis.cancel()});
     if (!contentDiv) {return;}
     contentDiv.innerText = text;
-
-    speakLongText(text);
 }
 
 main();
