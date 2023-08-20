@@ -42,7 +42,6 @@ async function speakLongText(text:string) {
     }
 
     let splitMessageContent = text.match(/[^.!?:;]+[.!?:;]+/g) || [];
-
     if (splitMessageContent.length === 0) {
         return;
     }
@@ -73,18 +72,12 @@ function selectVoice() {
     voice = voices.filter(function (voice) { return voice.name === 'Google UK English Male'; })[0];
 }
 
-const SpeechRecognition = (globalThis as any).SpeechRecognition || globalThis.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.lang = "en-GB";
-recognition.interimResults = false;
-recognition.maxAlternatives = 1;
-
 async function main() {
     debugger;
     console.log("Hello TypeScript!");
     speechSynthesis.onvoiceschanged = selectVoice;
-    let contentDiv = document.getElementById('content');
     
+    let contentDiv = document.getElementById('content');
     if (!contentDiv) {return;}
     contentDiv.innerText = text;
 
