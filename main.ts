@@ -35,14 +35,6 @@ So, given that, what I want to point out is this: this is the correct way to giv
 Contrast this with the absolute absurdity that you see in object-oriented “methodologies” that tell you to start writing things on index cards (like the “class responsibility collaborators” methodology), or breaking out Visio to show how things “interact” using boxes and lines that connect them. You can spend hours with these methodologies and end up more confused about the problem than when you started. But if you just forget all that, and write simple code, you can always create your objects after the fact and you will find that they are exactly what you wanted.
 If you’re not used to programming like this, you may think I’m exaggerating, but you’ll just have to trust me, it’s true. I spend exactly zero time thinking about “objects” or what goes where. The fallacy of “object-oriented programming” is exactly that: that code is at all “object-oriented”. It isn’t. Code is procedurally oriented, and the “objects” are simply constructs that arise that allow procedures to be reused. So if you just let that happen instead of trying to force everything to work backwards, programming becomes immensely more pleasant.Because I needed to spend some time introducing the concept of compression-oriented programming, and also because I enjoy trashing object-oriented programming, this article is already very long despite only showing a small fraction of the code transformations I did to the Witness UI code. So I will save the next round for next week, where I’ll talk about handling that multi-button code I showed, and then how I started using the newly compressed UI semantics to start extending what the UI itself could do.`;
 
-async function getPageText(url:string) {
-    let response = await fetch(url);
-
-    let content = await response.text();
-
-    return content;
-}
-
 async function speakLongText(text:string) {
     if (!('speechSynthesis' in window)) {
         console.warn("Speech is not supported in this browser!");
@@ -56,7 +48,6 @@ async function speakLongText(text:string) {
     }
 
     speakText(splitMessageContent)
-    // outputElement.innerText = JSON.stringify(messages, null, 4);
 }
 
 async function speakText(messages, index = 0) {
@@ -88,39 +79,14 @@ recognition.lang = "en-GB";
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
 
-function listen() {
-    return new Promise((resolve, reject) => {
-        recognition.onresult = (event) => {
-            const text = event.results[event.results.length - 1][0].transcript;
-            resolve(text);
-        };
-
-        recognition.onerror = (event) => {
-            reject(new Error("Error occurred in recognition: " + event.error));
-        };
-
-        recognition.start();
-    });
-}
-
-
-
 async function main() {
     debugger;
     console.log("Hello TypeScript!");
-
     speechSynthesis.onvoiceschanged = selectVoice;
-
-    // const inputField = document.getElementById('queryText') as HTMLTextAreaElement;
-    // const submitButton = document.getElementById('submitButton') as HTMLInputElement;
-    // const listenButton = document.getElementById('listenButton') as HTMLInputElement;
-
-
-    // if (!(submitButton && inputField && listenButton)) {
-    //     throw new Error(`Couldn't get elements!`)
-    // }
-    // submitButton.addEventListener('click', submitQuery);
-    // listenButton.addEventListener('click', listenAndSubmitQuery)
+    let contentDiv = document.getElementById('content');
+    
+    if (!contentDiv) {return;}
+    contentDiv.innerText = text;
 
     speakLongText(text);
 }
