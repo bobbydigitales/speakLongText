@@ -57,7 +57,7 @@ async function speakText(messages, index = 0) {
         }
 
         const utterance = new SpeechSynthesisUtterance(messages[index]);
-        utterance.voice = voice;
+        if (voice){utterance.voice = voice};
         utterance.onend = () => {
             resolve(speakText(messages, index + 1));
         };
@@ -76,7 +76,7 @@ async function main() {
     debugger;
     console.log("Hello TypeScript!");
     speechSynthesis.onvoiceschanged = selectVoice;
-    
+
     let contentDiv = document.getElementById('content');
     if (!contentDiv) {return;}
     contentDiv.innerText = text;
